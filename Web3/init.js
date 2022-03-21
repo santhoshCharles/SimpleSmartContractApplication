@@ -1,14 +1,20 @@
 import Web3 from "web3";
 import MigrationsBuild from "../truffle/build/contracts/NFT.json";
+import { createProvider } from "./Helper";
+import { createContract } from "./ConnectWithSmartContract";
 
-let selectedAccount = '';
+let selectedAccount = "";
 let connectWeb3 = false;
-let nftContract = null;
-let erc20Contract = null;
+let provider = null;
 
-export const initWeb3 = async() => {
-  const providerUrl = "https://localhost:8545";
-  let provider = window.ethereum;
+export const getConnectedStatus = () => connectWeb3;
+
+export const getSelectedAccount = () => selectedAccount;
+
+
+
+export const connectWithWallet = async () => {
+  provider = createProvider();
   if (typeof provider !== "undefined") {
     provider
       .request({ method: "eth_requestAccounts" })
@@ -18,55 +24,23 @@ export const initWeb3 = async() => {
         console.log(account);
       })
       .catch((err) => {
-          connectWeb3 = false;
-          console.log(err)
-        });
-    window.ethereum.on("accountsChanged", (changeddAccount) => {
-        selectedAccount=changeddAccount[0];
-      console.log(changeddAccount);
-    });
+        connectWeb3 = false;
+        console.log(err);
+      });
   }
   const web3 = new Web3(provider);
   const networkId = await web3.eth.net.getId();
-  console.log('networkId', networkId, MigrationsBuild.networks)
-  //nftContract = new web3.eth.Contract(MigrationsBuild.abi, MigrationsBuild.networks[networkId].address)
-  const erc20 = [
-    {
-        "constant": true,
-        "inputs": [
-            {
-                "name": "_owner",
-                "type": "address"
-            }
-        ],
-        "name": "balanceOf",
-        "outputs": [
-            {
-                "name": "balance",
-                "type": "uint256"
-            }
-        ],
-        "payable": false,
-        "stateMutability": "view",
-        "type": "function"
-    },
-  ];
-  erc20Contract = new web3.eth.Contract(erc20, '0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea');
-
+  console.log("networkId", networkId, MigrationsBuild.networks);
+  // erc20Contract = new web3.eth.Contract(
+  //   ERC20,
+  //   SMARTCONTRACT_ADDRESS
+  // );
+  await createContract();
 };
 
-export const getBalance = async() => {
-    if(connectWeb3) {
-    return erc20Contract.methods.balanceOf(selectedAccount).call();
-    }else {
-        await initWeb3();
-    }
-}
-
-export const mintToken = async() => {
-    if(connectWeb3) {
-        return nftContract.methods.mint(selectedAccount).send({from: selectedAccount})
-    } else {
-        await initWeb3();
-    }
+export const accountChange = () => {
+  window.ethereum.on("accountsChanged", (changeddAccount) => {
+    selectedAccount = changeddAccount[0];
+    console.log(changeddAccount);
+  });
 }
