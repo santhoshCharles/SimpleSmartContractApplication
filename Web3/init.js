@@ -1,5 +1,5 @@
 import Web3 from "web3";
-import MigrationsBuild from "../truffle/build/contracts/NFT.json";
+//import MigrationsBuild from "../truffle/build/contracts/NFT.json";
 import { createProvider } from "./Helper";
 import { createContract } from "./ConnectWithSmartContract";
 
@@ -10,8 +10,6 @@ let provider = null;
 export const getConnectedStatus = () => connectWeb3;
 
 export const getSelectedAccount = () => selectedAccount;
-
-
 
 export const connectWithWallet = async () => {
   provider = createProvider();
@@ -31,10 +29,6 @@ export const connectWithWallet = async () => {
   const web3 = new Web3(provider);
   const networkId = await web3.eth.net.getId();
   console.log("networkId", networkId, MigrationsBuild.networks);
-  // erc20Contract = new web3.eth.Contract(
-  //   ERC20,
-  //   SMARTCONTRACT_ADDRESS
-  // );
   await createContract();
 };
 
@@ -43,4 +37,4 @@ export const accountChange = () => {
     selectedAccount = changeddAccount[0];
     console.log(changeddAccount);
   });
-}
+};

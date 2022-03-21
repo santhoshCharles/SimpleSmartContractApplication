@@ -17,11 +17,7 @@ let selectedAccount = null;
 export const createContract = async () => {
   const provider = createProvider();
   const web3 = new Web3(provider);
-  const networkId = await web3.eth.net.getId();
-  erc20Contract = new web3.eth.Contract(
-    NEW_CONTRACT,
-    NEW_CONTRACT_ADDRESS
-  );
+  erc20Contract = new web3.eth.Contract(NEW_CONTRACT, NEW_CONTRACT_ADDRESS);
   selectedAccount = getSelectedAccount();
 };
 
@@ -72,20 +68,20 @@ export const mintToken = async () => {
   }
 };
 
-export const setUnits = async(units) => {
-  console.log('erc20Contract', erc20Contract, units)
+export const setUnits = async (units) => {
+  console.log("erc20Contract", erc20Contract, units);
   if (getConnectedStatus()) {
     return erc20Contract.methods.set(units).send({ from: selectedAccount });
   } else {
     await connectWithWallet();
   }
-}
+};
 
-export const getUnits = async() => {
-  console.log('erc20Contract', erc20Contract)
+export const getUnits = async () => {
+  console.log("erc20Contract", erc20Contract);
   if (getConnectedStatus()) {
     return erc20Contract.methods.get().call();
   } else {
     await connectWithWallet();
   }
-}
+};
